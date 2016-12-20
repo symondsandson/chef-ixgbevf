@@ -13,6 +13,7 @@ remote_file "#{Chef::Config[:file_cache_path]}/#{node['ixgbevf']['package']}" do
   checksum checksum
   mode 00644
   action :create
+  not_if { ::File.exists?("#{Chef::Config[:file_cache_path]}/#{node['ixgbevf']['package']}") }
 end
 
 execute 'extract_ixgbevf_source' do
@@ -52,7 +53,7 @@ execute 'dkms_install_ixgbevf' do
 end
 
 execute 'restart module' do
-  command "modprobe -r ixgbevf && modprobe ixgbevf"
+  command "modprobe ixgbevf"
   action :nothing
   subscribes :run, 'execute[dkms_install_ixgbevf]', :immediately
 end
